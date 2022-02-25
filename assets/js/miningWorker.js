@@ -132,12 +132,14 @@ class Miner {
 		return (await (await fetch(`${this.node}/chain/miningInfo`)).json()).result;
 	}
 	
+	
+	
 	async mine(minerAddress) {
 		const miningInfo = await this.getMiningInfo();
-		let miningData = {"difficulty": miningInfo.difficulty, "miningTarget": miningInfo.target, "miner": minerAddress, "nonce": (0).toFixed(), "proof": ""}
-		let context = {"messages": this.convertToHex("null"), "target": miningInfo.target, "parent": miningInfo.lastBlockHash, "timestamp": (this.clock.getTime()/1000).toFixed(), "miningData": miningData}
+		let miningData = {"difficulty": miningInfo.difficulty, "miningTarget": miningInfo.target, "miner": minerAddress, "nonce": "0", "proof": ""}
+		let context = {"messages": this.convertToHex("null"), "target": miningInfo.target, "parent": miningInfo.lastBlockHash, "timestamp": ((this.clock.getTime()/1000) + (Math.random()*10)).toFixed(), "miningData": miningData};
 		
-		const hashToMine = this.getHashToMine(context);
+		let hashToMine = this.getHashToMine(context);
 		console.log(`Hash to mine with : ${hashToMine}`);
 		let hash = "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
 		let nonce = 0;
@@ -147,6 +149,10 @@ class Miner {
 			hash = this.web3.utils.soliditySha3({"t": "bytes32", "v": hashToMine}, {"t": "uint256", "v": nonce.toFixed()});
 			if (nonce%10000 == 0) {
 				this.handleHashrate(nonce / ((Date.now() - begin)/1000));
+			}
+			if ((Date.now() - begin)%30000 == 0) {
+				context = {"messages": this.convertToHex("null"), "target": miningInfo.target, "parent": miningInfo.lastBlockHash, "timestamp": ((this.clock.getTime()/1000) + (Math.random()*10)).toFixed(), "miningData": miningData};
+				hashToMine = this.getHashToMine(context);
 			}
 		}
 		const end = Date.now();
@@ -181,24 +187,24 @@ async function getWork() {
     return returnValue;
 }
 
-async function mine() {
-    nonce = 0
-	hashes = 0
-	begin = Date.now();
-	while (BigInt(hash) >= BigInt(miningInfo.target)) {
-		nonce += 1;
-		hash = this.web3.utils.soliditySha3({"t": "bytes32", "v": hashToMine}, {"t": "uint256", "v": nonce.toFixed()})
-		if (nonce%10000 == 0) {
-			updateHashrate(hashes/((Date.now()-begin)/1000))
-		}
-    }
-	end = Date.now();
-    returnValue = {};
-    returnValue["nonce"] = nonce;
-    returnValue["result"] = _web3.utils.keccak256(_web3.utils.keccak256(_web3.utils.encodePacked(work.challenge, myAddress, nonce)));
-	returnValue["hashrate"] = hashes/((end-begin)/1000);
-    return (returnValue);
-}
+// async function mine() {
+    // nonce = 0
+	// hashes = 0
+	// begin = Date.now();
+	// while (BigInt(hash) >= BigInt(miningInfo.target)) {
+		// nonce += 1;
+		// hash = this.web3.utils.soliditySha3({"t": "bytes32", "v": hashToMine}, {"t": "uint256", "v": nonce.toFixed()})
+		// if (nonce%10000 == 0) {
+			// updateHashrate(hashes/((Date.now()-begin)/1000))
+		// }
+    // }
+	// end = Date.now();
+    // returnValue = {};
+    // returnValue["nonce"] = nonce;
+    // returnValue["result"] = _web3.utils.keccak256(_web3.utils.keccak256(_web3.utils.encodePacked(work.challenge, myAddress, nonce)));
+	// returnValue["hashrate"] = hashes/((end-begin)/1000);
+    // return (returnValue);
+// }
 
 // async function submitWork(results) {
 	// if (typeof refAddress == "undefined") {
