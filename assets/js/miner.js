@@ -99,9 +99,17 @@ async function refreshBalance() {
 	document.getElementById("currentbalance").innerHTML = Math.round((await wallet.getAccountInfo(currentAddress)).balance) + " SiriCoin";
 }
 
+async function formatAddress(_address_) {
+	splitted = _address_.split(".")
+	if (splitted[splitted.length-1] === "eth") {
+		ethmainnet = new Web3("https://main-light.eth.linkpool.io/");
+		return (await ethmainnet.eth.ens.getAddress(_address_));
+	}
+}
+
 function startMining(_address, _threads) {
 	try {
-		currentAddress = _web3.utils.toChecksumAddress(_address);
+		currentAddress = (await formatAddress(_address));
 		refreshBalance();
 		if (!minerActive) {
 			if (typeof Worker !== "undefined") {
