@@ -130,7 +130,7 @@ async function startMining(_address, _threads) {
 					// else {
 						// threads[i].postMessage(_address);
 					// }
-					threads[i].postMessage(_address);
+					threads[i].postMessage(currentAddress);
 					i += 1;
 				}
 			}
