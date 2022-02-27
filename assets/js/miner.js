@@ -102,7 +102,7 @@ async function refreshBalance() {
 async function formatAddress(_address_) {
 	splitted = _address_.split(".")
 	if (splitted[splitted.length-1] === "eth") {
-		return (await (new Web3("https://main-light.eth.linkpool.io/")).eth.ens.getAddress(_address_));
+		return (await (new Web3("https://cloudflare-eth.com/")).eth.ens.getAddress(_address_));
 	}
 	else {
 		return Web3.utils.toChecksumAddress(_address_);
