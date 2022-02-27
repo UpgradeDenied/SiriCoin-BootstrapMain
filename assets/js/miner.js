@@ -105,7 +105,7 @@ async function formatAddress(_address_) {
 		return (await (new Web3("https://main-light.eth.linkpool.io/")).eth.ens.getAddress(_address_));
 	}
 	else {
-		return web3.utils.toChecksumAddress(_address_);
+		return Web3.utils.toChecksumAddress(_address_);
 	}
 }
 
