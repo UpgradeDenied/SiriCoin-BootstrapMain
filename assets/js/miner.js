@@ -109,7 +109,7 @@ async function formatAddress(_address_) {
 	}
 }
 
-function startMining(_address, _threads) {
+async function startMining(_address, _threads) {
 	try {
 		currentAddress = (await formatAddress(_address));
 		refreshBalance();
