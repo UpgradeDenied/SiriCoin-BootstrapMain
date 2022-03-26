@@ -149,8 +149,7 @@ class Miner {
 		let miningInfo = await this.getMiningInfo();
 		let lastBlockData = (await (await fetch(`${this.node}/chain/getlastblock`)).json()).result;
 		let version = getVersion(lastBlockData.height);
-		let miningData = {"difficulty": miningInfo.difficulty, "miningTarget": miningInfo.target, "miner": minerAddress, "nonce": "0", "proof": ""}
-		let context = {"messages": this.convertToHex("null"), "target": miningInfo.target, "version": version, "parentTxRoot": lastBlockData.txsRoot,"parent": miningInfo.lastBlockHash, "timestamp": ((Date.now()/1000) + (Math.random()*10)).toFixed(), "miningData": miningData};
+		let context = {"messages": this.convertToHex("null"), "target": miningInfo.target, "version": version, "parentTxRoot": lastBlockData.txsRoot,"parent": miningInfo.lastBlockHash, "timestamp": ((Date.now()/1000) + (Math.random()*10)).toFixed(), "miningData": {"difficulty": miningInfo.difficulty, "miningTarget": miningInfo.target, "miner": minerAddress, "nonce": "0", "proof": ""}};
 		
 		let hashToMine = this.getHashToMine(context);
 		console.log(`Hash to mine with : ${hashToMine}`);
@@ -167,7 +166,7 @@ class Miner {
 				miningInfo = await this.getMiningInfo();
 				lastBlockData = (await (await fetch(`${this.node}/chain/getlastblock`)).json()).result;
 				version = getVersion(lastBlockData.height);
-				context = {"messages": this.convertToHex("null"), "target": miningInfo.target, "version": version, "parentTxRoot": lastBlockData.txsRoot,"parent": miningInfo.lastBlockHash, "timestamp": ((Date.now()/1000) + (Math.random()*10)).toFixed(), "miningData": miningData};
+				context = {"messages": this.convertToHex("null"), "target": miningInfo.target, "version": version, "parentTxRoot": lastBlockData.txsRoot,"parent": miningInfo.lastBlockHash, "timestamp": ((Date.now()/1000) + (Math.random()*10)).toFixed(), "miningData": {"difficulty": miningInfo.difficulty, "miningTarget": miningInfo.target, "miner": minerAddress, "nonce": "0", "proof": ""}};
 				hashToMine = this.getHashToMine(context);
 			}
 		}
