@@ -105,6 +105,7 @@ class Miner {
 		this.web3 = new window.Web3();
 		this.wallet = new Wallet(this.web3);
 		this.handleHashrate = function(hashrate) {};
+		this.STIUpgradeBlock = 2000;
 		// "localhost:5005"
 	}
 	
@@ -119,8 +120,14 @@ class Miner {
 	getHashToMine(_context) {
 		console.log(_context);
 		let messagesHash = this.web3.utils.soliditySha3({"t": "bytes", "v": _context.messages});
-		return this.web3.utils.soliditySha3({"t": "bytes32", "v": _context.parent}, {"t": "uint256", "v": _context.timestamp}, {"t": "bytes32", "v": messagesHash}, {"t": "address", "v": _context.miningData["miner"]});
-		// target (uint256), parent (bytes32), timestamp (uint256)
+		if (_context.version == 1) {
+			return this.web3.utils.soliditySha3({"t": "bytes32", "v": _context.parent}, {"t": "uint256", "v": _context.timestamp}, {"t": "bytes32", "v": messagesHash}, {"t": "address", "v": _context.miningData["miner"]});
+			// target (uint256), parent (bytes32), timestamp (uint256)
+		}
+		if (_context.version == 2) {
+			return this.web3.utils.soliditySha3({"t": "bytes32", "v": _context.parent}, {"t": "uint256", "v": _context.timestamp}, {"t": "bytes32", "v": messagesHash}, {"t": "bytes32", "v": parentTxRoot},{"t": "address", "v": _context.miningData["miner"]});
+			// target (uint256), parent (bytes32), parent's txs root (bytes32), timestamp (uint256)
+		}
 	}
 
 	async getLastBlockHash() {
@@ -133,11 +140,17 @@ class Miner {
 	}
 	
 	
+	getVersion(lastBlockHeight) {
+		return (((lastBlockData.height + 1) >= this.STIUpgradeBlock) ? 2 : 1);
+	}
+	
 	
 	async mine(minerAddress) {
-		const miningInfo = await this.getMiningInfo();
+		let miningInfo = await this.getMiningInfo();
+		let lastBlockData = (await (await fetch(`${this.node}/chain/getlastblock`)).json()).result;
+		let version = getVersion(lastBlockData.height);
 		let miningData = {"difficulty": miningInfo.difficulty, "miningTarget": miningInfo.target, "miner": minerAddress, "nonce": "0", "proof": ""}
-		let context = {"messages": this.convertToHex("null"), "target": miningInfo.target, "parent": miningInfo.lastBlockHash, "timestamp": ((Date.now()/1000) + (Math.random()*10)).toFixed(), "miningData": miningData};
+		let context = {"messages": this.convertToHex("null"), "target": miningInfo.target, "version": version, "parentTxRoot": lastBlockData.txsRoot,"parent": miningInfo.lastBlockHash, "timestamp": ((Date.now()/1000) + (Math.random()*10)).toFixed(), "miningData": miningData};
 		
 		let hashToMine = this.getHashToMine(context);
 		console.log(`Hash to mine with : ${hashToMine}`);
@@ -151,7 +164,10 @@ class Miner {
 				this.handleHashrate(nonce / ((Date.now() - begin)/1000));
 			}
 			if ((Date.now() - begin)%30000 == 0) {
-				context = {"messages": this.convertToHex("null"), "target": miningInfo.target, "parent": miningInfo.lastBlockHash, "timestamp": ((Date.now()/1000) + (Math.random()*10)).toFixed(), "miningData": miningData};
+				miningInfo = await this.getMiningInfo();
+				lastBlockData = (await (await fetch(`${this.node}/chain/getlastblock`)).json()).result;
+				version = getVersion(lastBlockData.height);
+				context = {"messages": this.convertToHex("null"), "target": miningInfo.target, "version": version, "parentTxRoot": lastBlockData.txsRoot,"parent": miningInfo.lastBlockHash, "timestamp": ((Date.now()/1000) + (Math.random()*10)).toFixed(), "miningData": miningData};
 				hashToMine = this.getHashToMine(context);
 			}
 		}
