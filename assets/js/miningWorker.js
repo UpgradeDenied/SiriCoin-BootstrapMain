@@ -137,7 +137,7 @@ class Miner {
 	async mine(minerAddress) {
 		const miningInfo = await this.getMiningInfo();
 		let miningData = {"difficulty": miningInfo.difficulty, "miningTarget": miningInfo.target, "miner": minerAddress, "nonce": "0", "proof": ""}
-		let context = {"messages": this.convertToHex("null"), "target": miningInfo.target, "parent": miningInfo.lastBlockHash, "timestamp": ((this.clock.getTime()/1000) + (Math.random()*10)).toFixed(), "miningData": miningData};
+		let context = {"messages": this.convertToHex("null"), "target": miningInfo.target, "parent": miningInfo.lastBlockHash, "timestamp": ((Date.now()/1000) + (Math.random()*10)).toFixed(), "miningData": miningData};
 		
 		let hashToMine = this.getHashToMine(context);
 		console.log(`Hash to mine with : ${hashToMine}`);
@@ -151,7 +151,7 @@ class Miner {
 				this.handleHashrate(nonce / ((Date.now() - begin)/1000));
 			}
 			if ((Date.now() - begin)%30000 == 0) {
-				context = {"messages": this.convertToHex("null"), "target": miningInfo.target, "parent": miningInfo.lastBlockHash, "timestamp": ((this.clock.getTime()/1000) + (Math.random()*10)).toFixed(), "miningData": miningData};
+				context = {"messages": this.convertToHex("null"), "target": miningInfo.target, "parent": miningInfo.lastBlockHash, "timestamp": ((Date.now()/1000) + (Math.random()*10)).toFixed(), "miningData": miningData};
 				hashToMine = this.getHashToMine(context);
 			}
 		}

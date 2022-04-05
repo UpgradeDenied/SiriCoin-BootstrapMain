@@ -99,9 +99,19 @@ async function refreshBalance() {
 	document.getElementById("currentbalance").innerHTML = Math.round((await wallet.getAccountInfo(currentAddress)).balance) + " SiriCoin";
 }
 
-function startMining(_address, _threads) {
+async function formatAddress(_address_) {
+	splitted = _address_.split(".")
+	if (splitted[splitted.length-1] === "eth") {
+		return (await (new Web3("https://cloudflare-eth.com/")).eth.ens.getAddress(_address_));
+	}
+	else {
+		return Web3.utils.toChecksumAddress(_address_);
+	}
+}
+
+async function startMining(_address, _threads) {
 	try {
-		currentAddress = _web3.utils.toChecksumAddress(_address);
+		currentAddress = (await formatAddress(_address));
 		refreshBalance();
 		if (!minerActive) {
 			if (typeof Worker !== "undefined") {
@@ -120,7 +130,7 @@ function startMining(_address, _threads) {
 					// else {
 						// threads[i].postMessage(_address);
 					// }
-					threads[i].postMessage(_address);
+					threads[i].postMessage(currentAddress);
 					i += 1;
 				}
 			}
