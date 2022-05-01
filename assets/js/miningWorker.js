@@ -43,11 +43,11 @@ class Wallet {
 	}
 	
 	async getAccountInfo(account) {
-		return (await (await fetch(`https://siricoin-node-1.dynamic-dns.net:5005/accounts/accountInfo/${account}`)).json()).result;
+		return (await (await fetch(`https://node-1.siricoin.tech:5006/accounts/accountInfo/${account}`)).json()).result;
 	}
 	
 	async getCurrentEpoch() {
-		return (await (await fetch(`https://siricoin-node-1.dynamic-dns.net:5005/chain/getlastblock`)).json()).result.miningData.proof;
+		return (await (await fetch(`https://node-1.siricoin.tech:5006/chain/getlastblock`)).json()).result.miningData.proof;
 	}
 
 	async getHeadTx(account) {
@@ -82,8 +82,8 @@ class Wallet {
 	}
 	
 	async getTransactionDetails(txid) {
-		console.log(`https://siricoin-node-1.dynamic-dns.net:5005/get/transactions/${txid}`);
-		const result = (await (await fetch(`https://siricoin-node-1.dynamic-dns.net:5005/get/transactions/{txid}`)).json()).result;
+		console.log(`https://node-1.siricoin.tech:5006/get/transactions/${txid}`);
+		const result = (await (await fetch(`https://node-1.siricoin.tech:5006/get/transactions/{txid}`)).json()).result;
 		console.log(result);
 		if (result.length > 0) {
 			return result[0];
