@@ -78,7 +78,7 @@ class Wallet {
 
 	async sendTransaction(signedTx) {
 		console.log(signedTx);
-		return (await (await fetch(`https://siricoin-node-1.dynamic-dns.net:5005/send/rawtransaction/?tx=${signedTx}`)).json()).result;
+		return (await (await fetch(`https://node-1.siricoin.tech:5006/send/rawtransaction/?tx=${signedTx}`)).json()).result;
 	}
 	
 	async getTransactionDetails(txid) {
@@ -234,7 +234,7 @@ async function getWork() {
 	// return returnValue;
 // }
 
-miner = new Miner("https://siricoin-node-1.dynamic-dns.net:5005")
+miner = new Miner("https://node-1.siricoin.tech:5006")
 
 
 function addShare(hashrate) {
