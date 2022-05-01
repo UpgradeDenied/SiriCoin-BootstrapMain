@@ -17,7 +17,7 @@ const addToMetamask = () => {
 					symbol: 'SC',
 					decimals: 18
 				},
-				rpcUrls: ['https://siricoin-node-1.dynamic-dns.net:5005/web3'],
+				rpcUrls: ['https://node-1.siricoin.tech:5006/web3'],
 				blockExplorerUrls: null,
 			}]
 		}).catch((error) => {
